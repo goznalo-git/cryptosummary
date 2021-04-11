@@ -3,8 +3,8 @@ import requests
 
 mydb = mysql.connector.connect(
     host="localhost",
-    user="gonzalo",
-    password="pass1234",
+    user="sample_user",
+    password="sample_password",
     database="cryptocoins"
 )
 
