@@ -9,23 +9,33 @@ with open("credentials.txt", "r") as f:
 
 
 def query_database(database, query):
-    """ Query the database and print the results """
+    """ Query the database and returns the cursor and columns """
     mycursor = database.cursor()
     mycursor.execute(query)
 
     cols = mycursor.column_names
-    fulldict = {}
+
+    return cols, mycursor
+
+
+def get_portfolio(cols, cursor):
+    """
+    Take the column names and the cursor, output a dictionary of
+    dictionaries, each containing a crypto -> tokens assignment
+    """
+    portfolio = {}
 
     while 1:
-        row = mycursor.fetchone()
+        row = cursor.fetchone()
 
         # Exit the loop if None
         if not row:
             break
 
-        fulldict[row[1]] = dict(zip(cols[2:], row[2:]))
+        values = map(float, row[2:])
+        portfolio[row[1]] = dict(zip(cols[2:], values))
 
-    print(fulldict.keys())
+    return portfolio
 
 
 # Database connection
@@ -37,8 +47,10 @@ mydb = mysql.connector.connect(
 )
 
 query = "SELECT * FROM my_money;"
-query_database(mydb, query)
 
+portfolio = get_portfolio(*query_database(mydb, query))
+
+print(portfolio["Coinbase"])
 
 exit()
 
