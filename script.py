@@ -15,13 +15,28 @@ mydb = mysql.connector.connect(
     database=creds[3]
 )
 
-mycursor = mydb.cursor()
+
+def query_database(query):
+
+    mycursor = mydb.cursor()
+    mycursor.execute(query)
+    myresult = mycursor.fetchall()
+
+    for line in myresult:
+        print(line)
+
 
 query = "SELECT * FROM my_money;"
+query_database(query)
 
-mycursor.execute(query)
 
-myresult = mycursor.fetchall()
+def get_latest_crypto_price(crypto=""):
 
-for line in myresult:
-    print(line)
+    URL = "https://eur.rate.sx/" + crypto
+    response = requests.get(URL)
+
+    return response
+
+
+response = get_latest_crypto_price()
+print(response.text)
