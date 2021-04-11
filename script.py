@@ -7,7 +7,28 @@ import requests
 with open("credentials.txt", "r") as f:
     creds = f.read().splitlines()
 
-# Connect to MySQL using the module
+
+def query_database(database, query):
+    """ Query the database and print the results """
+    mycursor = database.cursor()
+    mycursor.execute(query)
+
+    cols = mycursor.column_names
+    fulldict = {}
+
+    while 1:
+        row = mycursor.fetchone()
+
+        # Exit the loop if None
+        if not row:
+            break
+
+        fulldict[row[1]] = dict(zip(cols[2:], row[2:]))
+
+    print(fulldict.keys())
+
+
+# Database connection
 mydb = mysql.connector.connect(
     host=creds[0],
     user=creds[1],
@@ -15,22 +36,15 @@ mydb = mysql.connector.connect(
     database=creds[3]
 )
 
-
-def query_database(query):
-
-    mycursor = mydb.cursor()
-    mycursor.execute(query)
-    myresult = mycursor.fetchall()
-
-    for line in myresult:
-        print(line)
-
-
 query = "SELECT * FROM my_money;"
-query_database(query)
+query_database(mydb, query)
 
 
-def get_latest_crypto_price(crypto=""):
+exit()
+
+
+def get_crypto_price(crypto=""):
+    """ Get the current crypto exchange rate, using eur.rate.sx """
 
     URL = "https://eur.rate.sx/" + crypto
     response = requests.get(URL)
@@ -38,5 +52,5 @@ def get_latest_crypto_price(crypto=""):
     return response
 
 
-response = get_latest_crypto_price()
+response = get_crypto_price(btc)
 print(response.text)
