@@ -1,5 +1,7 @@
 # Cryptocurrency summary
 
+:currency_exchange: :moneybag: :chart: :euro: :money_with_wings:
+
 This little, fun project is something like a Python parser for cryptocurrencies, a CLI summary and balance of each and all of them.
 
 There are three parts in this project: storing the cryptocurrencies, fetching them and converting them using the current exchange rate.
@@ -24,5 +26,7 @@ This part entails querying the database to obtain the stored values, for their l
 ## Convert
 
 For this we will use the terminal-based website `rate.sx` (or rather, its euro alternative `eur.rate.sx`). We can use the request module to get exchange rates. For instance, if we have 10 bitcoin we can get its euro value requesting the `eur.rate.sx/10btc` website.
+
+It should be noted that `rate.sx` is an open source service which doesn't have a regular maintenance, thus some new/rare cryptocurrencies might not be supported yet (for instance, CGLP).
 
 We will incorporate this step in the same Python script as before.

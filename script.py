@@ -52,8 +52,6 @@ portfolio = get_portfolio(*query_database(mydb, query))
 
 print(portfolio["Coinbase"])
 
-exit()
-
 
 def get_crypto_price(crypto=""):
     """ Get the current crypto exchange rate, using eur.rate.sx """
@@ -64,5 +62,13 @@ def get_crypto_price(crypto=""):
     return response
 
 
-response = get_crypto_price(btc)
-print(response.text)
+for source in portfolio:
+    wallet = portfolio[source]
+    print(source)
+
+    for crypto in wallet.keys():
+        response = get_crypto_price(str(wallet[crypto]) + crypto)
+
+        if wallet[crypto] != 0.0:
+            # the response has a \n character at the end, we strip it and format the output
+            print("\t" + crypto + " -> " + response.text[:-1] + " €")
