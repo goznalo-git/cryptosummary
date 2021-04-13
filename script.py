@@ -74,16 +74,40 @@ def get_crypto_price(crypto=""):
     URL = "https://eur.rate.sx/" + crypto
     response = requests.get(URL)
 
-    return response
+    return response.text[:-1]
 
+
+balance = {}
 
 for source in portfolio:
     wallet = portfolio[source]
     print(source)
 
+    balance[source] = 0
+
     for crypto in wallet.keys():
-        response = get_crypto_price(str(wallet[crypto]) + crypto)
 
         if wallet[crypto] != 0.0:
+
+            response = get_crypto_price(str(wallet[crypto]) + crypto)
+
+            try:
+                amount = float(response)
+                balance[source] += amount
+            except ValueError:
+                print("\t" + crypto +
+                      ": there's no conversion rate available for such cryptocoin, in eur.rate.sx.")
+                continue
+
             # the response has a \n character at the end, we strip it and format the output
-            print("\t" + crypto + " -> " + response.text[:-1] + " €")
+            print("\t" + crypto + " -> " +
+                  str(round(amount, 3)) + " €")
+    print()
+
+
+[print(source + " total: " + str(round(balance[source], 3)) + " €")
+ for source in balance]
+
+print()
+
+print("Total total: " + str(round(sum(balance.values()), 3)) + " €")
