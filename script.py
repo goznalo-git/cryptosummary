@@ -2,6 +2,8 @@
 import mysql.connector
 import requests
 
+bold = '\033[1m'
+end = '\033[0m'
 
 # Obtain database credentials
 with open("credentials.txt", "r") as f:
@@ -38,19 +40,32 @@ def get_portfolio(cols, cursor):
     return portfolio
 
 
-# Database connection
-mydb = mysql.connector.connect(
-    host=creds[0],
-    user=creds[1],
-    password=creds[2],
-    database=creds[3]
-)
+try:
+    # Database connection
+    mydb = mysql.connector.connect(
+        host=creds[0],
+        user=creds[1],
+        password=creds[2],
+        database=creds[3]
+    )
 
-query = "SELECT * FROM my_money;"
+    query = "SELECT * FROM my_money;"
+    portfolio = get_portfolio(*query_database(mydb, query))
 
-portfolio = get_portfolio(*query_database(mydb, query))
+except mysql.connector.errors.InterfaceError:
+    print(bold + "MySQL connection Error" + end +
+          ": MySQL is probably not running. Please start it, with\n\tsudo systemctl start mysql\nif you are running a modern Linux system.")
+    print("It may also be that the host provided is wrong, be sure it is the appropriate one (usually localhost)\n")
+    exit()
 
-print(portfolio["Coinbase"])
+except mysql.connector.errors.ProgrammingError:
+    print(bold + "MySQL credentials error" + end +
+          ": The credentials provided (user, password, database) are not correct.\n")
+    exit()
+
+except:
+    print("An error occured, check the code for an insight")
+    exit()
 
 
 def get_crypto_price(crypto=""):
